@@ -1,0 +1,161 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://hermod.hourba.se/hermod.schema.json",
+    "title": "Hermod",
+    "description": "A YAML-based syntax for defining Hermod Units and Services",
+    "type": "object",
+    "properties": {
+        "package": {
+            "description": "The package name to use. Mostly applicable in generated code for Go.",
+            "type": "string"
+        },
+        "import": {
+            "description": "Go packages to import",
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "uniqueItems": true
+        },
+        "units": {
+            "description": "Units to define within the file",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "Name of the unit in PascalCase",
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "16-bit ID for unit. Must be unique across all files.",
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 65535
+                    },
+                    "embed": {
+                        "description": "List of structs to embed in Go generated code",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "import": {
+                        "description": "Go packages to import",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "fields": {
+                        "description": "List of fields",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "description": "Name of the unit in camelCase",
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "description": "16-bit ID for field. Must be unique within the unit.",
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 65535
+                                },
+                                "type": {
+                                    "description": "Type to use for field",
+                                    "type": "string"
+                                },
+                                "repeated": {
+                                    "description": "Make the field into an array",
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "extended": {
+                                    "description": "Use a 64-bit length header instead of 32-bit",
+                                    "type": "boolean",
+                                    "default": false
+                                },
+                                "tag": {
+                                    "description": "Tag to add to the struct definition for the field in Go",
+                                    "type": "string"
+                                }
+                            },
+                            "required": ["name", "id", "type"]
+                        }
+                    }
+                },
+                "required": ["name", "id", "fields"]
+            }
+        },
+        "services": {
+            "description": "Services to define within the file",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "Name of the service",
+                        "type": "string"
+                    },
+                    "endpoints": {
+                        "description": "Endpoints to define within the services",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "path": {
+                                    "description": "URL-style path for the endpoint",
+                                    "type": "string"
+                                },
+                                "id": {
+                                    "description": "16-bit ID for the endpoint. Must be unique across all files.",
+                                    "type": "number",
+                                    "minimum": 0,
+                                    "maximum": 65535
+                                },
+                                "in": {
+                                    "description": "Input parameter for the endpoint",
+                                    "type": "object",
+                                    "properties": {
+                                        "unit": {
+                                            "description": "Reference to a unit",
+                                            "type": "string"
+                                        },
+                                        "streamed": {
+                                            "description": "Whether to support streaming for this parameter",
+                                            "type": "boolean",
+                                            "default": false
+                                        }
+                                    }
+                                },
+                                "out": {
+                                    "description": "Output parameter for the endpoint",
+                                    "type": "object",
+                                    "properties": {
+                                        "unit": {
+                                            "description": "Reference to a unit",
+                                            "type": "string"
+                                        },
+                                        "streamed": {
+                                            "description": "Whether to support streaming for this parameter",
+                                            "type": "boolean",
+                                            "default": false
+                                        }
+                                    }
+                                }
+                            },
+                            "required": ["path", "id"]
+                        }
+                    }
+                },
+                "required": ["name", "endpoints"]
+            }
+        }
+    },
+    "required": [
+        "package"
+    ]
+}
